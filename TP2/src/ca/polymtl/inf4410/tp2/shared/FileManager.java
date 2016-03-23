@@ -17,12 +17,12 @@ public class FileManager {
 		this.path = path;
 	}
 	
-	public List<String> readClientConfig(String fileName) throws IOException {
-		return Files.readAllLines(Paths.get(path + "config" + fileName), StandardCharsets.US_ASCII);	
+	public List<String> readConfig(String fileName) throws IOException {
+		return Files.readAllLines(Paths.get(path + "config/" + fileName), StandardCharsets.US_ASCII);	
 	}
 	
-	public List<String> readOperations(String file) {
-		return null;
+	public List<String> readOperations(String fileName) throws IOException {
+		return Files.readAllLines(Paths.get(path + "donnees/" + fileName), StandardCharsets.US_ASCII);
 	}
 	
 	public static void writeFile(CustomFile file) {

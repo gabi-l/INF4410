@@ -13,11 +13,12 @@ import java.rmi.registry.Registry;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
 import ca.polymtl.inf4410.tp2.shared.OperationResult;
 import ca.polymtl.inf4410.tp2.shared.FileManager;
+import ca.polymtl.inf4410.tp2.shared.OperationInfo;
 
 
 public class Client {
 	public static void main(String[] args) {
-		/* Retrieving the cmd and the arg*/
+		/* Retrieving the args */
 		String clientConfigFile = null;
 		String donneeFile = null;
 		if (args.length > 0) {
@@ -40,18 +41,20 @@ public class Client {
 	private Vector<ArrayList<OperationResult>> results = null;
 	private FileManager fileManager = null;
 	private Vector<ServerInfo> serverList = null;
+	private Vector<OperationInfo> operationList = null;
 
 	public Client(String clientConfigFile, String donneeFile) {
 		super();
 		
 		/* Initialize stuffs... */
-		fileManager = new FileManager("./config_dir");
+		fileManager = new FileManager("./config_dir/");
 		serverList = new Vector<ServerInfo>();
+		operationList = new Vector<OperationInfo>();
 		
 		/* Extract the config */
-		List<String> clientConfig;
+		List<String> clientConfig = null;
 		try {
-			clientConfig = fileManager.readClientConfig("client1.config");
+			clientConfig = fileManager.readConfig(clientConfigFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,18 +62,31 @@ public class Client {
 		}
 		for(int i = 0; i < clientConfig.size(); i++) {
 			String line = clientConfig.get(i);
-			line.substring(0, line.indexOf(" "));
-			
+			String ip = line.substring(0, line.indexOf(" "));
+			int port = Integer.parseInt(line.substring(line.indexOf(" ") + 1, line.length()));
+			ServerInfo si = new ServerInfo(ip, port);
+			serverList.add(si);
 		}
 		
-		
-		List<String> operations = fileManager.readOperations("donnees-2317.txt");
+		/* Extract the operations */
+		List<String> operations = null;
+		try {
+			operations = fileManager.readOperations(donneeFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(int i = 0; i < operations.size(); i++) {
+			String line = operations.get(i);
+			String command = line.substring(0, line.indexOf(" "));
+			String operand = line.substring(line.indexOf(" ") + 1, line.length());
+			OperationInfo oi = new OperationInfo(command, operand);
+			operationList.add(oi);
+		}
 		
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
 		}
-
-		localServerStub = loadServerStub("132.207.12.43");
 		
 		isValidState = true;
 	}
@@ -89,23 +105,7 @@ public class Client {
 		
 	}
 
-	private ServerInterface loadServerStub(String hostname) {
-		ServerInterface stub = null;
-
-		try {
-			Registry registry = LocateRegistry.getRegistry(hostname, 5035);
-			stub = (ServerInterface) registry.lookup("server");
-		} catch (NotBoundException e) {
-			System.out.println("Erreur: Le nom '" + e.getMessage()
-					+ "' n'est pas défini dans le registre.");
-		} catch (AccessException e) {
-			System.out.println("Erreur: " + e.getMessage());
-		} catch (RemoteException e) {
-			System.out.println("Erreur: " + e.getMessage());
-		}
-
-		return stub;
-	}
+	
 	
 	
 /*try {

@@ -1,22 +1,52 @@
 package ca.polymtl.inf4410.tp2.server;
 
+import java.io.IOException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
+import ca.polymtl.inf4410.tp2.client.ServerInfo;
+import ca.polymtl.inf4410.tp2.shared.FileManager;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
 
 public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
-		Server server = new Server();
+		/* Retrieving the args */
+		String configFileName = null;
+		if (args.length > 0) {
+			configFileName = args[0];
+		}
+		else {
+			System.out.println("There were no command...");
+			return;
+		}
+		Server server = new Server(configFileName);
 		server.run();
 	}
 
-	public Server() {
+	private int port;
+	private FileManager fileManager = null;
+	
+	public Server(String configFileName) {
 		super();
+		
+		/* Initialize stuffs... */
+		fileManager = new FileManager("./config_dir/");
+		
+		/* Extract the config */
+		List<String> serverConfig = null;
+		try {
+			serverConfig = fileManager.readConfig(configFileName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		this.port = Integer.parseInt(serverConfig.get(0));
 	}
 
 	private void run() {
@@ -28,7 +58,7 @@ public class Server implements ServerInterface {
 			ServerInterface stub = (ServerInterface) UnicastRemoteObject
 					.exportObject(this, 0);
 
-			Registry registry = LocateRegistry.getRegistry(5035);
+			Registry registry = LocateRegistry.getRegistry(this.port);
 			registry.rebind("server", stub);
 			System.out.println("Server ready.");
 		} catch (ConnectException e) {
