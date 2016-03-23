@@ -8,20 +8,21 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-import ca.polymtl.inf4410.tp2.client.ServerInfo;
 import ca.polymtl.inf4410.tp2.shared.FileManager;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
+
 
 public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
 		/* Retrieving the args */
+		
 		String configFileName = null;
 		if (args.length > 0) {
 			configFileName = args[0];
 		}
 		else {
-			System.out.println("There were no command...");
+			System.out.println("There were no command... ");
 			return;
 		}
 		Server server = new Server(configFileName);
@@ -46,7 +47,7 @@ public class Server implements ServerInterface {
 			e.printStackTrace();
 			return;
 		}
-		this.port = Integer.parseInt(serverConfig.get(0));
+		this.port = Integer.parseInt(serverConfig.get(0));		
 	}
 
 	private void run() {
