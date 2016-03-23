@@ -16,7 +16,7 @@ public class ServerInfo {
 	public ServerInfo(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
-		
+		System.out.println("ServerStub..");
 		localServerStub = loadServerStub(this.ip, this.port);
 	}
 	
@@ -24,8 +24,11 @@ public class ServerInfo {
 		ServerInterface stub = null;
 
 		try {
+			System.out.println("ReadingConfig1");
 			Registry registry = LocateRegistry.getRegistry(hostname, port);
+			System.out.println("ReadingConfig2");
 			stub = (ServerInterface) registry.lookup("server");
+			System.out.println("ReadingConfig3");
 		} catch (NotBoundException e) {
 			System.out.println("Erreur: Le nom '" + e.getMessage()
 					+ "' n'est pas défini dans le registre.");

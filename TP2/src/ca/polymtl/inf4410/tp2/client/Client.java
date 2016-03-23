@@ -33,11 +33,11 @@ public class Client {
 		}
 
 		Client client = new Client(clientConfigFile, donneeFile);
+		System.out.println("Running...");
 		client.run();
 	}
 // TODO: Callable...isDone
 	private boolean isValidState = false;
-	private ServerInterface localServerStub = null;
 	private Vector<ArrayList<OperationResult>> results = null;
 	private FileManager fileManager = null;
 	private Vector<ServerInfo> serverList = null;
@@ -84,6 +84,8 @@ public class Client {
 			operationList.add(oi);
 		}
 		
+		
+		
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
 		}
@@ -95,8 +97,11 @@ public class Client {
 		
 		/* Execute the right cmd */
 		try {
-			int allo = localServerStub.fib(1);
-			System.out.println("Result receive: " + allo);
+			for(int i = 0; i < serverList.size(); i++ ) {
+				System.out.println("ServerConnection...");
+				int allo = serverList.get(i).localServerStub.fib(1);
+				System.out.println("Result receive: " + allo);
+			}			
 		}
 		catch (RemoteException e) {
 			System.out.println("Erreur: " + e.getMessage());
