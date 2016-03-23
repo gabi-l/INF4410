@@ -1,0 +1,16 @@
+Les étapes à effectuer afin de démarrer les applications client et serveur sont relativement similaires à ceux présentées dans l'annexe du TP.
+
+1. D'abord compiler les applications à partir du dossier racine avec la commande "ant".
+2. Dans un autre terminal démarrer les registres RMI à partir du dossier "bin" avec la commande "rmiregistry &".
+3. Toujours dans le nouveau terminal, démarrer le serveur à partir du dossier racine avec la commande "./server &"
+4. Dans le premier terminal, lancer le client à partir du dossier racine avec la commande "./client cmd arg".
+	> Noter que pour l'attribut "cmd" les commandes acceptées sont les suivantes: "create", "list", "syncLocalDir", "get", "lock"et "push"
+	> Noter que l'attribut "arg" est optionnel et dépend de la commande ("cmd") envoyée. Se référer à l'énoncé du TP pour plus de détails.
+
+* Il est important de noter que l'identifiant du client est stocké dans le fichier "clientId.conf". Un nouvel identifiant sera attribué au client si le fichier est abscent.
+	> Noter que dans la mesure où ce fichier est copié dans le répertoire d'un autre client, les deux clients auront le même identifiant.
+	    Il faut donc s'assurer que la regénération de ce dernier est faite en le supprimant lorsque l'application est duppliqé dans un autre dossier.
+	> Noter que ce fichier doit être manuellement supprimé lorsque l'application serveur est redémarrée.
+
+** Il est important de noter qu'afin de réduire le nombre de fichiers inutilement chargés en mémoire lors du démarrage de l'application,
+     les fichiers dont la permission d'exécution est accordée ne sont pas chargés.

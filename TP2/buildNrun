@@ -1,0 +1,13 @@
+## Compiling shit
+#ant
+
+## Starting RMI
+cd bin
+rmiregistry &
+cd ..
+
+## Starting sever
+./server &
+
+## Starting client including distant server
+#./client
