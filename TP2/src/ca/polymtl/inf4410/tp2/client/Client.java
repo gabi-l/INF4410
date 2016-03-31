@@ -9,6 +9,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.Callable;
 
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
 import ca.polymtl.inf4410.tp2.shared.OperationResult;
@@ -35,13 +40,18 @@ public class Client {
 		Client client = new Client(clientConfigFile, donneeFile);
 		System.out.println("Running...");
 		client.run();
+		System.out.println("Finishing...");
+		return;
 	}
 // TODO: Callable...isDone
 	private boolean isValidState = false;
-	private Vector<ArrayList<OperationResult>> results = null;
+	private Vector<Vector<OperationResult>> results = null;
 	private FileManager fileManager = null;
 	private Vector<ServerInfo> serverList = null;
 	private Vector<OperationInfo> operationList = null;
+	private int serverCount = 0;
+	private ExecutorService threadPool = null;
+	private Vector<Future<OperationResult>> futures = null;
 
 	public Client(String clientConfigFile, String donneeFile) {
 		super();
@@ -50,6 +60,8 @@ public class Client {
 		fileManager = new FileManager("./config_dir/");
 		serverList = new Vector<ServerInfo>();
 		operationList = new Vector<OperationInfo>();
+		threadPool = Executors.newFixedThreadPool(3);
+		futures = new Vector<Future<OperationResult>>();
 		
 		/* Extract the config */
 		List<String> clientConfig = null;
@@ -64,8 +76,9 @@ public class Client {
 			String line = clientConfig.get(i);
 			String ip = line.substring(0, line.indexOf(" "));
 			int port = Integer.parseInt(line.substring(line.indexOf(" ") + 1, line.length()));
-			ServerInfo si = new ServerInfo(ip, port);
+			ServerInfo si = new ServerInfo(ip, port, i);
 			serverList.add(si);
+			serverCount++;
 		}
 		
 		/* Extract the operations */
@@ -84,7 +97,12 @@ public class Client {
 			operationList.add(oi);
 		}
 		
-		
+		// Initialize the vector of results
+		results = new Vector<Vector<OperationResult>>();
+		for(int i = 0; i < operationList.size(); i++) {
+			Vector<OperationResult> resultList = new Vector<OperationResult>();
+			results.add(resultList);
+		}		
 		
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
@@ -95,23 +113,39 @@ public class Client {
 	
 	private void run() {
 		
-		/* Execute the right cmd */
-		try {
-			for(int i = 0; i < serverList.size(); i++ ) {
-				System.out.println("ServerConnection...");
-				int allo = serverList.get(i).localServerStub.fib(1);
-				System.out.println("Result receive: " + allo);
-			}			
-		}
-		catch (RemoteException e) {
-			System.out.println("Erreur: " + e.getMessage());
-			return;
+		// Starting the threads
+		OperationInfo operation = new OperationInfo("fib","1");
+		for(int i = 0; i < serverList.size(); i++ ) {
+			serverList.get(i).currentOperation = operation;
+			Callable<OperationResult> callable = serverList.get(i);
+			Future<OperationResult> future = threadPool.submit(callable);
+			futures.add(future);
 		}
 		
+		// Waiting for response...
+		int isAllDone = 0;
+		while(isAllDone < futures.size()) {
+			for(int i = 0; i < futures.size(); i++) {
+				if(futures.get(i).isDone()) {
+					isAllDone++;
+					OperationResult opRes;
+					try {
+						opRes = futures.get(i).get();
+						results.get(0).add(opRes);
+						System.out.println("Result:" + opRes.result);
+						
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		System.out.println("Je suis sortie...");
 	}
-
-	
-	
 	
 /*try {
 	isSucces = localServerStub.push(fileName, dataToSend, clientId);

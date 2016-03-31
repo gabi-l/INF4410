@@ -5,17 +5,23 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.concurrent.Callable;
 
+import ca.polymtl.inf4410.tp2.shared.OperationInfo;
+import ca.polymtl.inf4410.tp2.shared.OperationResult;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
 
-public class ServerInfo {
+public class ServerInfo implements Callable<OperationResult> {
 	public String ip;
 	public int port;
+	public int id;
 	public ServerInterface localServerStub = null;
+	public OperationInfo currentOperation = null;
 	
-	public ServerInfo(String ip, int port) {
+	public ServerInfo(String ip, int port, int id) {
 		this.ip = ip;
 		this.port = port;
+		this.id = id;
 		System.out.println("ServerStub..");
 		localServerStub = loadServerStub(this.ip, this.port);
 	}
@@ -24,11 +30,8 @@ public class ServerInfo {
 		ServerInterface stub = null;
 
 		try {
-			System.out.println("ReadingConfig1");
 			Registry registry = LocateRegistry.getRegistry(hostname, port);
-			System.out.println("ReadingConfig2");
 			stub = (ServerInterface) registry.lookup("server");
-			System.out.println("ReadingConfig3");
 		} catch (NotBoundException e) {
 			System.out.println("Erreur: Le nom '" + e.getMessage()
 					+ "' n'est pas défini dans le registre.");
@@ -39,5 +42,18 @@ public class ServerInfo {
 		}
 
 		return stub;
+	}
+
+	public OperationResult call() throws Exception {
+		System.out.println("Calling...");
+		int result;
+		if( currentOperation.command.equals("fib")) {
+			result = localServerStub.fib(1);
+		}
+		else {
+			result = 0;
+		}
+		OperationResult operationResult = new OperationResult(result, id);
+		return operationResult;
 	}
 }
