@@ -107,7 +107,7 @@ public class Client {
 		// Initialize the ServerJob vector
 		serverJob = new Vector<ServerJob>();
 		for(int i = 0; i < serverCount; i++) {
-			ServerJob sj = new ServerJob(operationList.size());
+			ServerJob sj = new ServerJob(operationList.size(), i, serverCount);
 			serverJob.add(sj);
 		}
 		
@@ -175,8 +175,8 @@ public class Client {
 					e.printStackTrace();
 				}
 			}
-			threadPool.shutdown();
 		}
+		threadPool.shutdown();
 		System.out.println("Je suis sortie...");
 	}
 	
