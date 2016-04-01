@@ -22,7 +22,7 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 		this.ip = ip;
 		this.port = port;
 		this.id = id;
-		System.out.println("ServerStub..");
+		System.out.println("Initializing server: " + id);
 		localServerStub = loadServerStub(this.ip, this.port);
 	}
 	
@@ -44,13 +44,17 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 		return stub;
 	}
 
-	public Vector<OperationResult> call() throws Exception {
-		System.out.println("Calling...");
+	public Vector<OperationResult> call() {
 		Vector<OperationResult> result = new Vector<OperationResult>();
 		OperationResult opRes;
 		int res;
 		for(int i = 0; i < currentJob.currentJob.size(); i++) {
-			res = localServerStub.fib(1);
+			try {
+				res = localServerStub.fib(1);
+			} catch (RemoteException e) {
+				currentJob.isDead = true;
+				return null;
+			}
 			opRes = new OperationResult(res, this.id, currentJob.currentJob.get(i).id);
 			result.add(opRes);
 		}

@@ -9,7 +9,7 @@ public class ResultGroup {
 	private int nServer = 0;
 	private int majorityLevel = 0;
 	public int result;
-	private Vector<OperationResult> finishedResultGroup = null;
+	public Vector<OperationResult> finishedResultGroup = null;
 	public Vector<Boolean> serverHasDoneTheJob = null;
 	
 	public ResultGroup(int nServer) {
@@ -63,7 +63,6 @@ public class ResultGroup {
 				}
 			}
 		}
-		System.out.println("Popular/count:" + popular + "/" + count);
 		Pair pair = new Pair(popular, count);
 		return pair;
 	}

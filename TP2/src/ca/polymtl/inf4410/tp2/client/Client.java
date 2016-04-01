@@ -31,9 +31,9 @@ public class Client {
 		}
 
 		Client client = new Client(clientConfigFile, donneeFile);
-		System.out.println("Running...");
+		System.out.println("\nInitializing the calculation.\n");
 		client.run();
-		System.out.println("Finishing...");
+		System.out.println("\nCalculation done.");
 		return;
 	}
 	
@@ -133,6 +133,10 @@ public class Client {
 				for(int i = 0; i < serverCount; i++ ) {
 					serverJob.get(i).setNewJob(results, operationList);
 					serverList.get(i).currentJob = serverJob.get(i);
+					System.out.println("Requesting to server " + serverList.get(i).id + " the amount of " + serverList.get(i).currentJob.currentJob.size() + " operation(s):");
+					for(int j = 0; j < serverList.get(i).currentJob.currentJob.size(); j++) {
+						System.out.println("    Operation: " + serverList.get(i).currentJob.currentJob.get(j).id);
+					}
 					Callable<Vector<OperationResult>> callable = serverList.get(i);
 					Future<Vector<OperationResult>> future = threadPool.submit(callable);
 					futures.add(future);
@@ -149,10 +153,12 @@ public class Client {
 						// Extract the results
 						OperationResult opRes;
 						try {
-							for(int j = 0; j < futures.get(i).get().size(); j++) {
-								opRes = futures.get(i).get().get(j);
-								results.get(opRes.operationId).addResult(opRes);
-							}							
+							if(futures.get(i).get() != null) {
+								for(int j = 0; j < futures.get(i).get().size(); j++) {
+									opRes = futures.get(i).get().get(j);
+									results.get(opRes.operationId).addResult(opRes);
+								}
+							}
 							
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
@@ -163,7 +169,6 @@ public class Client {
 						}
 					}
 					else {
-						System.out.println("Is not done: " + i);
 						isAllDone = false;
 					}
 				}
@@ -177,14 +182,5 @@ public class Client {
 			}
 		}
 		threadPool.shutdown();
-		System.out.println("Je suis sortie...");
 	}
-	
-/*try {
-	isSucces = localServerStub.push(fileName, dataToSend, clientId);
-}
-catch (RemoteException e) {
-	System.out.println("Erreur: " + e.getMessage());
-	return;
-}*/
 }

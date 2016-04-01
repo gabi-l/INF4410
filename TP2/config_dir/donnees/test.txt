@@ -2,5 +2,3 @@ fib 43
 fib 43
 fib 43
 fib 43
-fib 43
-fib 43
