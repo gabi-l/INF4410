@@ -11,14 +11,16 @@ public class ServerJob {
 	private int jobIndex = 0;
 	public boolean lastSucceed = true;
 	private int serverID;
+	private int nServers;
 	
-	public ServerJob(int nOperations, int serverID) {
+	public ServerJob(int nOperations, int serverID, int nServers) {
 		currentJob = new Vector<OperationInfo>();
 		jobDone = new Vector<Boolean>();
 		for(int i = 0; i < nOperations; i++) {
 			jobDone.add(false);
 		}
 		this.serverID = serverID;
+		this.nServers = nServers;
 	}
 	
 	public void setNewJob(Vector<ResultGroup> results, Vector<OperationInfo> operations) {
@@ -42,13 +44,5 @@ public class ServerJob {
 			// Remove last element for the failed job
 			currentJob.removeElementAt(currentJob.size()-1);
 		}		
-		
-		
-		/*if(currentJob.size() == 0) {
-			for(int i = 0; i < results.size(); i++) {
-				System.out.println("Adding a operation to the job...");
-				currentJob.add(operations.get(i));
-			}
-		}*/
 	}
 }

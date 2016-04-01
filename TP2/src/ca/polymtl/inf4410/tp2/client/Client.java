@@ -107,7 +107,7 @@ public class Client {
 		// Initialize the ServerJob vector
 		serverJob = new Vector<ServerJob>();
 		for(int i = 0; i < serverCount; i++) {
-			ServerJob sj = new ServerJob(operationList.size(), i);
+			ServerJob sj = new ServerJob(operationList.size(), i, serverCount);
 			serverJob.add(sj);
 		}
 		
