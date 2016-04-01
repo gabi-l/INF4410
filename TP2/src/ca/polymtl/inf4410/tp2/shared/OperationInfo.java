@@ -5,8 +5,9 @@ public class OperationInfo {
 	public String operand;
 	public int id;
 	
-	public OperationInfo(String command, String operand) {
+	public OperationInfo(String command, String operand, int id) {
 		this.command = command;
 		this.operand = operand;
+		this.id = id;
 	}
 }

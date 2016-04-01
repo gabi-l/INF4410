@@ -6,17 +6,17 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.Callable;
+import java.util.Vector;
 
-import ca.polymtl.inf4410.tp2.shared.OperationInfo;
 import ca.polymtl.inf4410.tp2.shared.OperationResult;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
 
-public class ServerInfo implements Callable<OperationResult> {
+public class ServerInfo implements Callable<Vector<OperationResult>> {
 	public String ip;
 	public int port;
 	public int id;
 	public ServerInterface localServerStub = null;
-	public OperationInfo currentOperation = null;
+	public ServerJob currentJob = null;
 	
 	public ServerInfo(String ip, int port, int id) {
 		this.ip = ip;
@@ -44,16 +44,16 @@ public class ServerInfo implements Callable<OperationResult> {
 		return stub;
 	}
 
-	public OperationResult call() throws Exception {
+	public Vector<OperationResult> call() throws Exception {
 		System.out.println("Calling...");
-		int result;
-		if( currentOperation.command.equals("fib")) {
-			result = localServerStub.fib(1);
+		Vector<OperationResult> result = new Vector<OperationResult>();
+		OperationResult opRes;
+		int res;
+		for(int i = 0; i < currentJob.currentJob.size(); i++) {
+			res = localServerStub.fib(1);
+			opRes = new OperationResult(res, this.id, currentJob.currentJob.get(i).id);
+			result.add(opRes);
 		}
-		else {
-			result = 0;
-		}
-		OperationResult operationResult = new OperationResult(result, id);
-		return operationResult;
+		return result;
 	}
 }
