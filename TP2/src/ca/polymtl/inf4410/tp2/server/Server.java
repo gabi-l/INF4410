@@ -118,18 +118,25 @@ public class Server implements ServerInterface {
 		
 	}
 	
-	public int executeTask(Vector<OperationInfo> op) throws RemoteException {
+	public Vector<Integer> executeTask(Vector<OperationInfo> op) throws RemoteException {
 		
-		if(op.size() <= this.taskSize) {
+		Vector<Integer> opResult = new Vector<Integer>();
+		if((op.size() > this.taskSize)) {
+			
+		}
+		else if(op.size() <= this.taskSize) {
 			for(int i = 0; i < op.size(); ++i) {
 				if(op.get(i).command.equals("fib")) {
-					this.fib(Integer.parseInt(op.get(i).operand));
+					opResult.add(this.fib(Integer.parseInt(op.get(i).operand)));
+				}
+				else if(op.get(i).command.equals("prime")) {
+					opResult.add(this.prime(Integer.parseInt(op.get(i).operand)));
 				}
 				
 			}
 		}
 		
-		return 0;
+		return opResult;
 	}
 	
 }
