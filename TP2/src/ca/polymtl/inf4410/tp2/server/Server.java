@@ -15,6 +15,7 @@ import ca.polymtl.inf4410.tp2.shared.Operations;
 import ca.polymtl.inf4410.tp2.shared.OperationInfo;
 
 
+
 public class Server implements ServerInterface {
 
 	public static void main(String[] args) {
@@ -51,6 +52,7 @@ public class Server implements ServerInterface {
 			e.printStackTrace();
 			return;
 		}
+
 		this.port = Integer.parseInt(serverConfig.get(0));
 		//TODO: Modify the line below so that the taskSize is taken from the serverConfig file
 		taskSize = 10;
