@@ -1,7 +1,5 @@
 package ca.polymtl.inf4410.tp2.client;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import ca.polymtl.inf4410.tp2.shared.OperationResult;
@@ -12,7 +10,7 @@ public class ResultGroup {
 	private int majorityLevel = 0;
 	public int result;
 	private Vector<OperationResult> finishedResultGroup = null;
-	public Vector<Boolean> serverHasBeenTask = null;
+	public Vector<Boolean> serverHasDoneTheJob = null;
 	
 	public ResultGroup(int nServer) {
 		finishedResultGroup = new Vector<OperationResult>();
@@ -20,10 +18,10 @@ public class ResultGroup {
 			finishedResultGroup.add(null);
 		}
 		this.nServer = nServer;
-		majorityLevel = (int)Math.ceil((double)nServer / 2);
-		serverHasBeenTask = new Vector<Boolean>();
+		majorityLevel = (int)Math.ceil((double)this.nServer / 2);
+		serverHasDoneTheJob = new Vector<Boolean>();
 		for(int i = 0; i < nServer; i++) {
-			serverHasBeenTask.add(false);
+			serverHasDoneTheJob.add(false);
 		}
 	}
 	
@@ -36,33 +34,38 @@ public class ResultGroup {
 		}
 	}
 	private Pair getMostPopularAnswer() {
-		if(finishedResultGroup.get(0) != null) {
-			int count = 1;
-			int tempCount;
-			int popular = finishedResultGroup.get(0).result;
-			int temp = -1;
-			for(int i = 0; i < finishedResultGroup.size(); i++) {
-				if(finishedResultGroup.get(i) != null) {
-					temp = finishedResultGroup.get(i).result;
-					tempCount = 0;
-					for(int j = 1; j < finishedResultGroup.size(); j++) {
-						if(finishedResultGroup.get(j) != null) {
-							if(temp == finishedResultGroup.get(j).result) {
-								tempCount++;
-							}
-							if(tempCount > count) {
-								popular = temp;
-								count = tempCount;
-							}
+		int k = 0;
+		while(k < finishedResultGroup.size() && finishedResultGroup.get(k) == null) {
+			k++;
+		}
+		if(k == finishedResultGroup.size()) {
+			return null;
+		}
+		
+		int count = 1;
+		int tempCount;
+		int popular = finishedResultGroup.get(k).result;
+		int temp = -1;
+		for(int i = k; i < finishedResultGroup.size(); i++) {
+			if(finishedResultGroup.get(i) != null) {
+				temp = finishedResultGroup.get(i).result;
+				tempCount = 0;
+				for(int j = k; j < finishedResultGroup.size(); j++) {
+					if(finishedResultGroup.get(j) != null) {
+						if(temp == finishedResultGroup.get(j).result) {
+							tempCount++;
+						}
+						if(tempCount > count) {
+							popular = temp;
+							count = tempCount;
 						}
 					}
 				}
 			}
-			System.out.println("Popular/count:" + popular + "/" + count);
-			Pair pair = new Pair(popular, count);
-			return pair;
 		}
-		return null;
+		System.out.println("Popular/count:" + popular + "/" + count);
+		Pair pair = new Pair(popular, count);
+		return pair;
 	}
 	
 	public boolean isResultValid() {
@@ -77,7 +80,6 @@ public class ResultGroup {
 	}
 	
 	public void addResult(OperationResult or) {
-		System.out.println("addResult_serverId" + or.serverId);
 		// Only add if the given result was not already added
 		if(finishedResultGroup.get(or.serverId) == null) {
 			finishedResultGroup.set(or.serverId, or);
