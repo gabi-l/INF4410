@@ -150,7 +150,9 @@ public class Server implements ServerInterface {
 		return true;
 	}
 	public boolean isMaliciousAnswer() {
-		
+		if(this.isMalicious == 0) {
+			return false;
+		}
 		int random = (int) (Math.random() * 2);
 		if(random == 0) {
 			return false;
