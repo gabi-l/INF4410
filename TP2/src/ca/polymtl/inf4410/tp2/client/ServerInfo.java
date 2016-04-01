@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import ca.polymtl.inf4410.tp2.shared.OperationResult;
 import ca.polymtl.inf4410.tp2.shared.ServerInterface;
+import ca.polymtl.inf4410.tp2.shared.ServerOverloadException;
 
 public class ServerInfo implements Callable<Vector<OperationResult>> {
 	public String ip;
@@ -47,17 +48,26 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 	public Vector<OperationResult> call() {
 		Vector<OperationResult> result = new Vector<OperationResult>();
 		OperationResult opRes;
-		int res;
-		for(int i = 0; i < currentJob.currentJob.size(); i++) {
-			try {
-				res = localServerStub.fib(1);
-			} catch (RemoteException e) {
-				currentJob.isDead = true;
-				return null;
-			}
-			opRes = new OperationResult(res, this.id, currentJob.currentJob.get(i).id);
-			result.add(opRes);
+		Vector<Integer> res;
+		try {
+			res = localServerStub.executeTask(currentJob.currentJob);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			currentJob.isDead = true;
+			return null;
+		} catch (ServerOverloadException e) {
+			System.out.println("Je plante....");
+			currentJob.lastSucceed = false;
+			return null;
 		}
-		return result;
+		if(res != null)
+		{
+			for(int i = 0; i < res.size(); i++) {
+				opRes = new OperationResult(res.get(i), this.id, currentJob.currentJob.get(i).id);
+				result.add(opRes);
+			}
+			return result;
+		}
+		return null;
 	}
 }

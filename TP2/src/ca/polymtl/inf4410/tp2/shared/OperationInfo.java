@@ -1,6 +1,12 @@
 package ca.polymtl.inf4410.tp2.shared;
 
-public class OperationInfo {
+import java.io.Serializable;
+
+public class OperationInfo implements Serializable {
+	/**
+	 * Automatically generated serialVersionUID
+	 */
+	private static final long serialVersionUID = 768559023527339212L;
 	public String command;
 	public String operand;
 	public int id;

@@ -33,6 +33,7 @@ public class Client {
 		Client client = new Client(clientConfigFile, donneeFile);
 		System.out.println("\nInitializing the calculation.\n");
 		client.run();
+		client.calculateAnswer();
 		System.out.println("\nCalculation done.");
 		return;
 	}
@@ -123,6 +124,14 @@ public class Client {
 			}
 		}
 		return true;
+	}
+	
+	private void calculateAnswer() {
+		int result = 0;
+		for(int i = 0; i < results.size(); i++) {
+			result = (result + results.get(i).result) % 5000;
+		}
+		System.out.println("\nThe final result is:" + result);
 	}
 	
 	private void run() {
