@@ -36,6 +36,7 @@ public class Server implements ServerInterface {
 	private int port;
 	private FileManager fileManager = null;
 	private int normalCapacity;
+	private int isMalicious;
 	
 	public Server(String configFileName) {
 		super();
@@ -55,6 +56,7 @@ public class Server implements ServerInterface {
 
 		this.port = Integer.parseInt(serverConfig.get(0));
 		normalCapacity = Integer.parseInt(serverConfig.get(1));
+		isMalicious = Integer.parseInt(serverConfig.get(2));
 	}
 
 	private void run() {
@@ -88,18 +90,18 @@ public class Server implements ServerInterface {
 	@Override
 	public int fib(int x) throws RemoteException {
 		// TODO Auto-generated method stub
-		//TODO: Handle correctly the error rates
-		int err = 0;
 		int result;
-		
-		if(err == 0) {
-			result = Operations.fib(x);
-		}
-		else {
-			result = Operations.fib(x) + 1;
-		}
-		
+		result = Operations.fib(x);		
 		System.out.println("Fib(" + x + ") = " + result);
+		return result;
+	}
+	
+	public int fibMalicious(int x) throws RemoteException {
+		// TODO Auto-generated method stub
+		int result;
+		result = Operations.fib(x);
+		result += (int) (Math.random() * 5 +1);
+		System.out.println("Error Fib(" + x + ") = " + result);
 		return result;
 	}
 
@@ -107,17 +109,18 @@ public class Server implements ServerInterface {
 	public int prime(int x) throws RemoteException {
 		// TODO Auto-generated method stub
 		//TODO: Handle correctly the error rates
-		int err = 0;
 		int result;
-		
-		if(err == 0) {
-			result = Operations.prime(x);
-		}
-		else {
-			result = Operations.prime(x) + 1;
-		}
-		
+		result = Operations.prime(x);
 		System.out.println("Prime(" + x + ") = " + result);
+		return result;
+	}
+	
+	public int primeMalicious(int x) throws RemoteException {
+		// TODO Auto-generated method stub
+		int result;
+		result = Operations.prime(x);
+		result += (int) (Math.random() * 5 +1);
+		System.out.println("Error Prime(" + x + ") = " + result);
 		return result;
 	}
 	
@@ -135,7 +138,6 @@ public class Server implements ServerInterface {
 			
 			//Generate a random number between 0 and 100 ( 0 <= random <= 100)
 			int random = (int)( Math.random() * 101);
-			System.out.println("the value of the random number is: " + random );
 			
 			//if the random number is in the refusalRate margin
 			if(random <= refusalRate) {
@@ -147,11 +149,20 @@ public class Server implements ServerInterface {
 		
 		return true;
 	}
+	public boolean isMaliciousAnswer() {
+		
+		int random = (int) (Math.random() * 2);
+		if(random == 0) {
+			return false;
+		}
+		
+		return true;
+	}
 	
 	@Override
 	public Vector<Integer> executeTask(Vector<OperationInfo> task) throws RemoteException, ServerOverloadException {
 		
-		System.out.println("Trying to execute a task with a size of: " + task.size());
+		System.out.println("\nTrying to execute a task with a size of: " + task.size());
 		Vector<Integer> opResult = new Vector<Integer>();
 		if(!isAcceptedTask(task)) {
 			
@@ -161,14 +172,26 @@ public class Server implements ServerInterface {
 		for(int i = 0; i < task.size(); ++i) {
 			
 			if(task.get(i).command.equals("fib")) {
+				if(!isMaliciousAnswer()) {
+					//Add the result of fib to the vector of results
+					opResult.add(this.fib(Integer.parseInt(task.get(i).operand)));
+				}
+				else if(isMaliciousAnswer()) {
+					//Add the result of the malicious fib to the vector of results
+					opResult.add(this.fibMalicious(Integer.parseInt(task.get(i).operand)));
+				}
 				
-				//Add the result of fib to the vector of results
-				opResult.add(this.fib(Integer.parseInt(task.get(i).operand)));
 			}
 			else if(task.get(i).command.equals("prime")) {
 				
-				//Add the result of prime to the vector of results
-				opResult.add(this.prime(Integer.parseInt(task.get(i).operand)));
+				if(!isMaliciousAnswer()) {
+					//Add the result of prime to the vector of results
+					opResult.add(this.prime(Integer.parseInt(task.get(i).operand)));
+				}
+				else if(isMaliciousAnswer()) {
+					//Add the result of the malicious prime to the vector of results
+					opResult.add(this.primeMalicious(Integer.parseInt(task.get(i).operand)));
+				}
 			}			
 		}
 		
