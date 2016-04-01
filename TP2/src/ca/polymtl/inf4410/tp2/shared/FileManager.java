@@ -25,47 +25,4 @@ public class FileManager {
 		return null;
 	}
 	
-	public static void writeFile(CustomFile file) {
-		Path cPath = Paths.get(path + file.fileName);
-	    try {
-	    	Files.deleteIfExists(cPath);
-	    	if(file.data != null) {
-	    		Files.write(cPath, file.data);
-	    	}
-	    	else {
-	    		Files.createFile(cPath);
-	    	}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public List<String> findFiles() {
-		File folder = new File(path);
-		File[] listOfFiles = folder.listFiles();
-		List<String> filesName = new Vector<String>();
-	    for (int i = 0; i < listOfFiles.length; i++) {
-	      if (listOfFiles[i].isFile() && listOfFiles[i].canRead() && !listOfFiles[i].canExecute()) {	// Excluding the file that can be execute to prevent changing their permission...
-	    	  filesName.add(listOfFiles[i].getName());
-	      }
-	    }
-	    return filesName;
-	}
-	
-	public CustomFile readFile(String fileName) {
-		try {
-    		/* Read a file */
-			byte[] data = Files.readAllBytes(Paths.get(path + fileName));
-			CustomFile file = new CustomFile(fileName);
-			file.data = new byte[data.length];
-			for(int j = 0; j < data.length; j++) {
-				file.data[j] = data[j];
-			}
-			return file;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
 }

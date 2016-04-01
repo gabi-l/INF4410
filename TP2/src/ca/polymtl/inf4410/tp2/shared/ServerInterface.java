@@ -11,5 +11,4 @@ public interface ServerInterface extends Remote {
 	/* Operations */
 	public int fib(int x) throws RemoteException;
 	public int prime(int x) throws RemoteException;
-	public int isPrime(int x) throws RemoteException;
 }
