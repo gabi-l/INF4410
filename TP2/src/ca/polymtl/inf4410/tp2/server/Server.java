@@ -80,24 +80,19 @@ public class Server implements ServerInterface {
 			System.err.println("Erreur: " + e.getMessage());
 		}
 	}
+	
+	/* calls the fib operation from the class Operations */
+	private int fib(int x) {
 
-	@Override
-	public int signIn() throws RemoteException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int fib(int x) throws RemoteException {
-		// TODO Auto-generated method stub
 		int result;
 		result = Operations.fib(x);		
 		System.out.println("Fib(" + x + ") = " + result);
 		return result;
 	}
 	
-	public int fibMalicious(int x) throws RemoteException {
-		// TODO Auto-generated method stub
+	/* Calls the fib operation but modifies the result so that it is not the good answer */
+	private int fibMalicious(int x) {
+
 		int result;
 		result = Operations.fib(x);
 		result += (int) (Math.random() * 5 +1);
@@ -105,18 +100,18 @@ public class Server implements ServerInterface {
 		return result;
 	}
 
-	@Override
-	public int prime(int x) throws RemoteException {
-		// TODO Auto-generated method stub
-		//TODO: Handle correctly the error rates
+	/* calls the prime operation from the class Operations */
+	private int prime(int x) {
+
 		int result;
 		result = Operations.prime(x);
 		System.out.println("Prime(" + x + ") = " + result);
 		return result;
 	}
 	
-	public int primeMalicious(int x) throws RemoteException {
-		// TODO Auto-generated method stub
+	/* Calls the prime operation but modifies the result so that it is not the good answer */
+	private int primeMalicious(int x) {
+
 		int result;
 		result = Operations.prime(x);
 		result += (int) (Math.random() * 5 +1);
@@ -124,8 +119,8 @@ public class Server implements ServerInterface {
 		return result;
 	}
 	
-	//Verify if the task is accepted by the server
-	public boolean isAcceptedTask(Vector<OperationInfo> task) {
+	/* Verify if the task is accepted by the server */
+	private boolean isAcceptedTask(Vector<OperationInfo> task) {
 
 		if(task.size() > this.normalCapacity) {
 			
@@ -149,8 +144,8 @@ public class Server implements ServerInterface {
 		
 		return true;
 	}
-	public boolean isMaliciousAnswer() {
-		
+	
+	private boolean isMaliciousAnswer() {		
 		
 		//Generate a random number between 0 and 99 ( 0 <= random <= 99)
 		int random = (int) (Math.random() * 100);
@@ -161,6 +156,11 @@ public class Server implements ServerInterface {
 		return true;
 	}
 
+	@Override
+	public int signIn() throws RemoteException {
+		
+		return 0;
+	}
 	
 	@Override
 	public Vector<Integer> executeTask(Vector<OperationInfo> task) throws RemoteException, ServerOverloadException {
@@ -202,11 +202,12 @@ public class Server implements ServerInterface {
 		return opResult;
 	}
 	
+	/* This function tests the server execution */
 	public void unitTest() {
 		
 		/* 
-		 *  Task 1 will be normal case 
-		 *  Task 2 will be the possible overoad case (>0% and <100%)
+		 *  Task 1 will be the normal case 
+		 *  Task 2 will be the possible overload case (>0% and <100%)
 		 *  Task 3 will be the 100% overload case
 		 *                        										*/
 		
