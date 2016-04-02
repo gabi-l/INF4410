@@ -36,7 +36,7 @@ public class Server implements ServerInterface {
 	private int port;
 	private FileManager fileManager = null;
 	private int normalCapacity;
-	private int isMalicious;
+	private int percentageOfMaliciousness;
 	
 	public Server(String configFileName) {
 		super();
@@ -56,7 +56,7 @@ public class Server implements ServerInterface {
 
 		this.port = Integer.parseInt(serverConfig.get(0));
 		normalCapacity = Integer.parseInt(serverConfig.get(1));
-		isMalicious = Integer.parseInt(serverConfig.get(2));
+		percentageOfMaliciousness = Integer.parseInt(serverConfig.get(2));
 	}
 
 	private void run() {
@@ -136,8 +136,8 @@ public class Server implements ServerInterface {
 			}
 			System.out.println("the value of the refusal rate is: " + refusalRate );
 			
-			//Generate a random number between 0 and 100 ( 0 <= random <= 100)
-			int random = (int)( Math.random() * 101);
+			//Generate a random number between 1 and 100 ( 1 <= random <= 100)
+			int random = (int)( Math.random() * 100 + 1);
 			
 			//if the random number is in the refusalRate margin
 			if(random <= refusalRate) {
@@ -150,16 +150,17 @@ public class Server implements ServerInterface {
 		return true;
 	}
 	public boolean isMaliciousAnswer() {
-		if(this.isMalicious == 0) {
-			return false;
-		}
-		int random = (int) (Math.random() * 2);
-		if(random == 0) {
+		
+		
+		//Generate a random number between 0 and 99 ( 0 <= random <= 99)
+		int random = (int) (Math.random() * 100);
+		if(random >= percentageOfMaliciousness) {
 			return false;
 		}
 		
 		return true;
 	}
+
 	
 	@Override
 	public Vector<Integer> executeTask(Vector<OperationInfo> task) throws RemoteException, ServerOverloadException {
@@ -174,11 +175,12 @@ public class Server implements ServerInterface {
 		for(int i = 0; i < task.size(); ++i) {
 			
 			if(task.get(i).command.equals("fib")) {
-				if(!isMaliciousAnswer()) {
+				
+				if(isMaliciousAnswer() == false) {
 					//Add the result of fib to the vector of results
 					opResult.add(this.fib(Integer.parseInt(task.get(i).operand)));
 				}
-				else if(isMaliciousAnswer()) {
+				else {
 					//Add the result of the malicious fib to the vector of results
 					opResult.add(this.fibMalicious(Integer.parseInt(task.get(i).operand)));
 				}
@@ -186,11 +188,11 @@ public class Server implements ServerInterface {
 			}
 			else if(task.get(i).command.equals("prime")) {
 				
-				if(!isMaliciousAnswer()) {
+				if(isMaliciousAnswer() == false) {
 					//Add the result of prime to the vector of results
 					opResult.add(this.prime(Integer.parseInt(task.get(i).operand)));
 				}
-				else if(isMaliciousAnswer()) {
+				else {
 					//Add the result of the malicious prime to the vector of results
 					opResult.add(this.primeMalicious(Integer.parseInt(task.get(i).operand)));
 				}
@@ -285,6 +287,7 @@ public class Server implements ServerInterface {
 		try {
 			System.out.println("-------------------------Test3-------------------------");
 			results3 = executeTask(task3);
+			System.out.println("the size of result3 is: " + results3.size());
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
