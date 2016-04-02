@@ -49,7 +49,6 @@ public class Server implements ServerInterface {
 		try {
 			serverConfig = fileManager.readConfig(configFileName);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -149,6 +148,7 @@ public class Server implements ServerInterface {
 		
 		//Generate a random number between 0 and 99 ( 0 <= random <= 99)
 		int random = (int) (Math.random() * 100);
+		//If the random generated number is out of the malicious margin
 		if(random >= percentageOfMaliciousness) {
 			return false;
 		}
@@ -162,6 +162,7 @@ public class Server implements ServerInterface {
 		return 0;
 	}
 	
+	/* This function calls the right operation. */
 	@Override
 	public Vector<Integer> executeTask(Vector<OperationInfo> task) throws RemoteException, ServerOverloadException {
 		
@@ -264,10 +265,8 @@ public class Server implements ServerInterface {
 			results1 = executeTask(task1);
 			System.out.println("the size of result1 is: " + results1.size());
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ServerOverloadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Server overload exception thrown for task1");
 		}
@@ -277,10 +276,8 @@ public class Server implements ServerInterface {
 			results2 = executeTask(task2);
 			System.out.println("the size of result2 is: " + results2.size());
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ServerOverloadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Server overload exception thrown for task2");
 		}
@@ -290,10 +287,8 @@ public class Server implements ServerInterface {
 			results3 = executeTask(task3);
 			System.out.println("the size of result3 is: " + results3.size());
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ServerOverloadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Server overload exception thrown for task3");
 		}
