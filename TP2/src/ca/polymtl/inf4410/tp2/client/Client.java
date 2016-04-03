@@ -32,9 +32,12 @@ public class Client {
 
 		Client client = new Client(clientConfigFile, donneeFile);
 		System.out.println("\nInitializing the calculation.\n");
+		long start = System.currentTimeMillis();
 		client.run();
 		client.calculateAnswer();
+		long end = System.currentTimeMillis();
 		System.out.println("\nCalculation done.");
+		System.out.println("Took " + (end - start)/1000 + " seconds.");
 		return;
 	}
 	
@@ -77,11 +80,12 @@ public class Client {
 		if(clientConfig.get(0).equals("1")) {
 			isSafeMode = true;
 		}
+		// Start all the servers
 		for(int i = 1; i < clientConfig.size(); i++) {
 			String line = clientConfig.get(i);
 			String ip = line.substring(0, line.indexOf(" "));
 			int port = Integer.parseInt(line.substring(line.indexOf(" ") + 1, line.length()));
-			ServerInfo si = new ServerInfo(ip, port, i);
+			ServerInfo si = new ServerInfo(ip, port, i-1);
 			serverList.add(si);
 			serverCount++;
 		}

@@ -17,7 +17,7 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 	public int port;
 	public int id;
 	public ServerInterface localServerStub = null;
-	public ServerJob currentJob = null;
+	public ServerJob currentJob = null;	// Set dynamically by the client (list of operation to be executed on the server)
 	
 	public ServerInfo(String ip, int port, int id) {
 		this.ip = ip;
@@ -27,6 +27,7 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 		localServerStub = loadServerStub(this.ip, this.port);
 	}
 	
+	/* Connect with the server */
 	private ServerInterface loadServerStub(String hostname, int port) {
 		ServerInterface stub = null;
 
@@ -45,6 +46,7 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 		return stub;
 	}
 
+	/* Execute the current set of operations on the given server. */
 	public Vector<OperationResult> call() {
 		Vector<OperationResult> result = new Vector<OperationResult>();
 		OperationResult opRes;
@@ -52,11 +54,11 @@ public class ServerInfo implements Callable<Vector<OperationResult>> {
 		try {
 			res = localServerStub.executeTask(currentJob.currentJob);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			System.out.println("Server " + this.id + " is dead.");
 			currentJob.isDead = true;
 			return null;
 		} catch (ServerOverloadException e) {
-			System.out.println("Je plante....");
+			System.out.println("Server " + this.id + " overloaded.");
 			currentJob.lastSucceed = false;
 			return null;
 		}
