@@ -12,13 +12,20 @@ public class ResultGroup {
 	public Vector<OperationResult> finishedResultGroup = null;
 	public Vector<Boolean> serverHasDoneTheJob = null;
 	
-	public ResultGroup(int nServer) {
+	public ResultGroup(int nServer, boolean isSafeMode) {
 		finishedResultGroup = new Vector<OperationResult>();
 		for(int i = 0; i < nServer; i++) {
 			finishedResultGroup.add(null);
 		}
+		
 		this.nServer = nServer;
-		majorityLevel = (int)Math.ceil((double)this.nServer / 2);
+		
+		if(isSafeMode) {
+			majorityLevel = 1; // Server won't ever answer badly
+		}
+		else {
+			majorityLevel = (int)Math.ceil((double)this.nServer / 2);
+		}
 		serverHasDoneTheJob = new Vector<Boolean>();
 		for(int i = 0; i < nServer; i++) {
 			serverHasDoneTheJob.add(false);

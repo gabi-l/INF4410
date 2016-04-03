@@ -38,10 +38,11 @@ public class Client {
 		return;
 	}
 	
-	// Common stuff of the client
+	// General stuff of the client
 	private FileManager fileManager = null;
 	private Vector<ServerInfo> serverList = null;
 	private int serverCount = 0;
+	private boolean isSafeMode = false;
 	
 	// Job to do
 	private Vector<OperationInfo> operationList = null;
@@ -73,7 +74,10 @@ public class Client {
 			e.printStackTrace();
 			return;
 		}
-		for(int i = 0; i < clientConfig.size(); i++) {
+		if(clientConfig.get(0).equals("1")) {
+			isSafeMode = true;
+		}
+		for(int i = 1; i < clientConfig.size(); i++) {
 			String line = clientConfig.get(i);
 			String ip = line.substring(0, line.indexOf(" "));
 			int port = Integer.parseInt(line.substring(line.indexOf(" ") + 1, line.length()));
@@ -101,7 +105,7 @@ public class Client {
 		// Initialize the vector of results
 		results = new Vector<ResultGroup>();
 		for(int i = 0; i < operationList.size(); i++) {
-			ResultGroup resultGroup = new ResultGroup(serverCount);
+			ResultGroup resultGroup = new ResultGroup(serverCount, isSafeMode);
 			results.add(resultGroup);
 		}
 		
