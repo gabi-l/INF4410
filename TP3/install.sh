@@ -13,6 +13,7 @@ echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf
 # -----------------------------------
 
 # installation de mysql-server, mysql-client, apache2,  php5, libapache2-mod-php5, php5-mysql, phpmyadmin. Dans le meme ordre
+sudo apt-get update -q -y
 sudo apt-get install mysql-server -q -y
 sudo apt-get install mysql-client -q -y
 sudo apt-get install apache2 -q -y

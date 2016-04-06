@@ -1,0 +1,2 @@
+scp -i mykey.pem somefile.txt root@my.ec2.id.amazonaws.com:/
+scp foobar.txt your_username@remotehost.edu:/some/remote/directory
