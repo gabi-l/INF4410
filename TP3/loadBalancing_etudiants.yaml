@@ -16,27 +16,57 @@ parameters:
   subnet_id:
     type: string
     description: Sous-reseau dans lequel le load balancer sera situe
-    default: #A completer
+    default: 22207ede-1911-47ca-b509-5698e34cf46c
+  
+  network:
+    type: string
+    description: Network use by the server
+    default: reseau-pour-tous
 
 resources:
+  database_password:
+    type: OS::Heat::RandomString
+
+  database_root_password:
+    type: OS::Heat::RandomString
+
   web_nodes:
       type: OS::Heat::ResourceGroup
       properties:
-      #A completer
-
-
+        count: 2
+        resource_def:
+          type: OS::Nova::Server
+          properties:
+            image: { get_param: image }
+            flavor: { get_param: flavor }
+            networks:
+              - network: { get_param: network }
+            user_data: |
+              #!/bin/bash
+              wget http://secretaire.dorsal.polymtl.ca/~hdaoud/infonuagique/server.py
+              python server.py &
   pool:
-      type: OS::Neutron::Pool
-      #A completer
-
-  lbalancer:
-      type: OS::Neutron::LoadBalancer
-      #A completer
+    type: OS::Neutron::Pool
+    properties:
+      protocol: HTTP
+      monitors: [{get_resource: monitor}]
+      subnet_id: {get_param: subnet_id}
+      lb_method: ROUND_ROBIN
+      vip:
+        protocol_port: 8000
+  lb:
+    type: OS::Neutron::LoadBalancer
+    properties:
+      protocol_port: 8000
+      pool_id: {get_resource: pool}
 
   monitor:
       type: OS::Neutron::HealthMonitor
       properties:
-
+        type: TCP
+        delay: 13
+        max_retries: 1
+        timeout: 9
 
 outputs:
   pool_ip_address:
